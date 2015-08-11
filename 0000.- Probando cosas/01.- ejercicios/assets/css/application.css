@@ -1,0 +1,41 @@
+body {
+	/* 60px to move the container down and
+	* make room for the navigation bar */
+}
+
+.titulo{
+	text-align: center;
+	background-color:#428bca;
+	color:white;
+	padding:20px 30px 30px 30px;
+	margin-bottom:20px;
+}
+
+div.container span.sepIzquierda
+{
+	margin-left:0px;
+}
+
+.dentrocuerpo
+{
+	border:solid 1px black;
+	border-radius:3px; 
+	-moz-border-radius:3px; /* Firefox */ 
+	-webkit-border-radius:3px; /* Safari y Chrome */ 
+	background-color: #E6E6FA;
+	padding:10px 5px 10px 5px;
+	margin-top:5px;
+	margin-bottom:5px;
+}
+
+.dentrocuerpo:hover
+{
+	background-color: #47a447;
+	color:white;
+	border-color:red;
+}
+
+.dentrocuerpo
+{
+	cursor:pointer;
+}

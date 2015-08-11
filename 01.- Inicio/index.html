@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Marionette Contact Manager</title>
+		<!-- Css del bootstrap. -->
+		<link href="./assets/css/bootstrap.css" rel="stylesheet">
+		<!-- Contiene el css creado por nosotros. -->
+		<link href="./assets/css/application.css" rel="stylesheet">
+
+	</head>
+
+	<body>
+		<div class="navbar navbar-inverse navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container">
+					<span class="brand">Contact manager</span>
+				</div>
+			</div>
+		</div>
+		
+		<div class="container">
+			<p>Here is static content in the web page. You'll notice that it gets
+			replaced by our app as soon as we start it.</p>
+		</div>
+		
+		<!-- Librerias necesarias para marionette -->
+		<script src="./assets/js/vendor/jquery.js"></script>
+		<script src="./assets/js/vendor/json2.js"></script>
+		<script src="./assets/js/vendor/underscore.js"></script>
+		<script src="./assets/js/vendor/backbone.js"></script>
+		<script src="./assets/js/vendor/backbone.marionette.js"></script>
+		
+		
+		<script type="text/javascript">
+			//Inicializamos la variable de marionette.
+			var ContactManager = new Marionette.Application();
+			
+			//Métodos cargados después de incializar.
+			ContactManager.on("initialize:after", function(){
+				//Mostrar frase en el log del depurador.
+				console.log("ContactManager has started!");
+			});
+			
+			//Para cargar la variable con los parámetros introducidos.
+			ContactManager.start();
+		</script>
+	</body>
+</html>

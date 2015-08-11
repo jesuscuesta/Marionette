@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Marionette Contact Manager</title>
+		<link href="./assets/css/bootstrap.css" rel="stylesheet">
+		<link href="./assets/css/application.css" rel="stylesheet">
+
+	</head>
+
+	<body>
+		<div class="navbar navbar-inverse navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container">
+					<span class="brand">Contact manager</span>
+				</div>
+			</div>
+		</div>
+		
+		<div id="main-region" class="container">
+			<p>Here is static content in the web page. You'll notice that it gets
+			replaced by our app as soon as we start it.</p>
+		</div>
+		
+		<script type="text/template" id="contact-list-item">
+			<%= firstName %> <%= lastName %>
+		</script>
+		
+		<script src="./assets/js/vendor/jquery.js"></script>
+		<script src="./assets/js/vendor/json2.js"></script>
+		<script src="./assets/js/vendor/underscore.js"></script>
+		<script src="./assets/js/vendor/backbone.js"></script>
+		<script src="./assets/js/vendor/backbone.marionette.js"></script>
+		
+		<!-- The javascript includes are here -->
+		<script src="./assets/js/app.js"></script>
+		<script src="./assets/js/entities/contact.js"></script>
+		
+		<script type="text/javascript">
+			
+			
+			//Inicializamos el modelo.
+			ContactManager.Contact = Backbone.Model.extend({});
+			
+			//Añadimos el modelo a la colección.
+			ContactManager.ContactCollection = Backbone.Collection.extend({
+				model: ContactManager.Contact,
+				//Ordenamos alfabéticamente alfabéticamente. Indicamos el parámetros que tendremos en cuenta
+				// para ordenar.
+				comparator:function(contact) {
+					return contact.get("firstName") + " " + contact.get("lastName");
+				}
+			});
+			
+			//Indicamos la plantilla que vamos a modificar.
+			ContactManager.ContactItemView = Marionette.ItemView.extend({
+				//Indicamos el tagName para que sustituya al div creado automáticamente.
+				tagName: "li",
+				template: "#contact-list-item"
+			});
+			
+			//Enlazamos la colección con la plantilla.
+			ContactManager.ContactsView = Marionette.CollectionView.extend({
+				//Este tag lo añadirá para principio y fin de mostrar las colecciones.
+				tagName: "ul",
+				itemView: ContactManager.ContactItemView
+			});
+			
+			ContactManager.on("initialize:after", function(){
+				//Introducimos los datos en la colección.
+				var contacts = new ContactManager.ContactCollection(
+				[
+					{
+						firstName: "Alice",
+						lastName: "Tampen"
+					},
+					{
+						firstName: "Bob",
+						lastName: "Brigham"
+					},
+					{
+						firstName: "Alice",
+						lastName: "Artsy"
+					},
+					{
+						firstName: "Alice",
+						lastName: "Arten"
+					},
+					{
+						firstName: "Charlie",
+						lastName: "Campbell"
+					},
+					{
+						firstName: "Alice",
+						lastName: "Smith"
+					},
+				]);
+				
+				var contactsListView = new ContactManager.ContactsView({
+					collection: contacts
+				});
+				
+				ContactManager.mainRegion.show(contactsListView);
+			});
+			
+			//Con este método, llamamos al module creado en contact.js. 
+			ContactManager.Entities.alertPublic("Hello");
+			
+			ContactManager.start();
+		</script>
+	</body>
+</html>

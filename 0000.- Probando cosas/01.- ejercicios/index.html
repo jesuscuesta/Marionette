@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Marionette Contact Manager</title>
+		<!-- Css del bootstrap. -->
+		<link href="./assets/css/bootstrap.min.css" rel="stylesheet">
+		<link href="./assets/css/bootstrap-theme.min.css" rel="stylesheet">
+		<!-- Contiene el css creado por nosotros. -->
+		<link href="./assets/css/application.css" rel="stylesheet">
+
+	</head>
+
+	<body>
+		<div class="span12 titulo">
+			<h1>Caja personas</h1>
+		</div>
+		
+		<div class="container" id="contenidoSustituir">
+		</div>
+
+		<!-- Aquí vamos a poner la plantilla que se irá repitiendo deontro del container -->
+		<script type="text/template" id="cajaPersonas">
+				<div class="col-sm-3 dentrocuerpo">
+					<div class="col-sm-12 nombre"><%= firstName %></div>
+					<div class="col-sm-12 apellido"><%= lastName %></div>
+					<div class="col-sm-12 telefono"><%= phoneNumber %></div>
+				</div>
+		</script>
+		
+		<script src="./assets/js/bootstrap.min.js"></script>
+		<!-- Librerias necesarias para marionette -->
+		<script src="./assets/js/vendor/jquery.js"></script>
+		<script src="./assets/js/vendor/json2.js"></script>
+		<script src="./assets/js/vendor/underscore.js"></script>
+		<script src="./assets/js/vendor/backbone.js"></script>
+		<script src="./assets/js/vendor/backbone.marionette.js"></script>
+
+		<!-- The javascript includes are here -->
+		<script src="./assets/js/entities/contact.js"></script>
+		
+		
+		<script type="text/javascript">
+			//Inicializamos Marionette.
+			var ContactManager = new Marionette.Application();
+			
+			//Añadimos una región para poder interactuar con ella.
+			ContactManager.addRegions({
+				mainRegion: "#contenidoSustituir"
+			});
+
+			//Inicializamos el modelo.
+			ContactManager.Contact = Backbone.Model.extend({});
+			
+			//Añadimos el modelo a la colección.
+			ContactManager.ContactCollection = Backbone.Collection.extend({
+				model: ContactManager.Contact
+			});
+			
+			//Añadimos la plantilla con la que trabajaremos.
+			ContactManager.ContactItemView = Marionette.ItemView.extend({
+				template: "#cajaPersonas",
+				//Añadimos los eventos a la template.
+				events: {
+					"click .dentrocuerpo": "elegir"
+				},
+				
+				//La función que cargaremos cuando se produzca el evento.
+				elegir: function(){
+					$("h1").html("Caja personas  - " + this.model.escape("firstName"));				
+				}
+			});
+
+			//Enlazamos la colección con la plantilla.
+			ContactManager.ContactsView = Marionette.CollectionView.extend({
+				itemView: ContactManager.ContactItemView
+			});
+			
+			ContactManager.on("initialize:after", function(){
+				//Introducimos los datos en la colección.
+				var contacts = new ContactManager.ContactCollection(
+				[
+					{
+						firstName: "Pedro",
+						lastName: "Picapiedra",
+						phoneNumber: "111 111 111"
+					},
+					{
+						firstName: "Bob",
+						lastName: "Esponja",
+						phoneNumber: "222 222 222"
+					},
+					{
+						firstName: "Bart",
+						lastName: "Simpsoon",
+						phoneNumber: "333 333 333"
+					},
+					{
+						firstName: "Oso",
+						lastName: "Yogui",
+						phoneNumber: "444 444 444"
+					},
+					{
+						firstName: "Oliver",
+						lastName: "Atom",
+						phoneNumber: "555 555 555"
+					},
+					{
+						firstName: "Benji",
+						lastName: "Price",
+						phoneNumber: "666 666 666"
+					}
+				]);
+				
+				//Introducimos en la variable la coleccion, para añadirla
+				var contactsListView = new ContactManager.ContactsView({
+					collection: contacts
+				});
+				
+				ContactManager.mainRegion.show(contactsListView);
+			});
+
+			//Con este método, llamamos al module creado en contact.js. 
+			// ContactManager.Entities.alertPublic("Hello");
+			
+			ContactManager.start();
+		</script>
+	</body>
+</html>

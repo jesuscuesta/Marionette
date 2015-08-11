@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Marionette Contact Manager</title>
+		<!-- Css del bootstrap. -->
+		<link href="./assets/css/bootstrap.min.css" rel="stylesheet">
+		<!-- Contiene el css creado por nosotros. -->
+		<link href="./assets/css/application.css" rel="stylesheet">
+
+	</head>
+
+	<body>
+		<div class="span12 titulo">
+			<h1>Coge la pareja</h1>
+		</div>
+		
+		<div class="container" id="contenidoSustituir">
+		</div>
+
+		<!-- Aquí vamos a poner la plantilla que se irá repitiendo deontro del container -->
+		<script type="text/template" id="cajaPersonas">
+				<div class="col-sm-2 dentrocuerpo">
+					<div class="ocultoCarta <%= posicion %>_<%= nombre %>">
+						<div class="col-sm-12 imagen"><img height="50px" src="<%= src %>" alt="<%= nombre %>" title="<%= nombre %>" /></div>
+						<div class="col-sm-12 nombre"><%= nombre %></div>
+					</div>
+				</div>
+		</script>
+		
+		
+		<!-- Librerias necesarias para marionette -->
+		<script src="./assets/js/vendor/jquery.js"></script>
+		<script src="./assets/js/vendor/json2.js"></script>
+		<script src="./assets/js/vendor/underscore.js"></script>
+		<script src="./assets/js/vendor/backbone.js"></script>
+		<script src="./assets/js/vendor/backbone.marionette.js"></script>
+
+		<!-- The javascript includes are here -->
+		<!--<script src="./assets/js/entities/contact.js"></script>-->
+		<script src="./assets/js/bootstrap.min.js"></script>
+		
+		<script type="text/javascript">
+			//Preguntamos el nivel de dificultad que desea.
+			var nivel = prompt("Elige el nivel de dificultad: facil, medio o dificil");
+
+			//Inicializamos Marionette.
+			var ContactManager = new Marionette.Application();
+			
+			//Añadimos una región para poder interactuar con ella.
+			ContactManager.addRegions({
+				mainRegion: "#contenidoSustituir"
+			});
+
+			//Inicializamos el modelo.
+			ContactManager.Contact = Backbone.Model.extend({});
+			
+			//Añadimos el modelo a la colección.
+			ContactManager.ContactCollection = Backbone.Collection.extend({
+				model: ContactManager.Contact
+			});
+			
+			//Añadimos la plantilla con la que trabajaremos.
+			ContactManager.ContactItemView = Marionette.ItemView.extend({
+				template: "#cajaPersonas",
+				//Añadimos los eventos a la template.
+				events: {
+					"click .dentrocuerpo": "elegir"
+				},
+				
+				//La función que cargaremos cuando se produzca el evento.
+				elegir: function(variable){
+					var nombre = this.model.escape("nombre");
+					var posicion = this.model.escape("posicion");
+					$("." + posicion + "_" + nombre).addClass("selected");
+					//Cuando termine de mostrar las cartas, comparará si hay dos cartas	
+					$("." + posicion + "_" + nombre).show("slow",function(variable)
+					{
+						if($(".selected").size()%2==0)
+						{;
+							//Comparamos si es la misma carta.
+							if($(".1_" + nombre).hasClass("selected") && $(".2_" + nombre).hasClass("selected"))
+							{
+								//Comprobamos si queda alguna carta sin levantar, si es así, ha ganado y le muestra un mensaje
+								//$(".selected").size()
+								if($(".selected").size()==$(".dentrocuerpo").size())
+								{
+									alert("Has ganado. Vamos a reiniciar la partida");
+									location.reload();
+								}
+							}
+							else
+							{
+								//Si no lo es, ocultamos las dos cartas y les quitamos el selected
+								$(".selected").fadeOut("slow");
+								$(".selected").removeClass("selected");
+							}
+							
+						}
+					});
+				}
+			});
+
+			//Enlazamos la colección con la plantilla.
+			ContactManager.ContactsView = Marionette.CollectionView.extend({
+				itemView: ContactManager.ContactItemView
+			});
+			
+			ContactManager.on("initialize:after", function(){
+				//Introducimos los datos en la colección.
+				var contacts = new ContactManager.ContactCollection(
+				[
+					{
+						posicion: "1",
+						nombre: "as",
+						src: "assets/img/as.jpg"
+					},
+					{
+						posicion: "2",
+						nombre: "as",
+						src: "assets/img/as.jpg"
+					},
+					{
+						posicion: "1",
+						nombre: "rey",
+						src: "assets/img/rey.jpg"
+					},
+					{
+						posicion: "2",
+						nombre: "rey",
+						src: "assets/img/rey.jpg"
+					},
+					{
+						posicion: "1",
+						nombre: "caballo",
+						src: "assets/img/caballo.jpg"
+					},
+					{
+						posicion: "2",
+						nombre: "caballo",
+						src: "assets/img/caballo.jpg"
+					},
+					{
+						posicion: "1",
+						nombre: "sota",
+						src: "assets/img/sota.jpg"
+					},
+					{
+						posicion: "2",
+						nombre: "sota",
+						src: "assets/img/sota.jpg"
+					}
+					
+				]);
+
+				//Cortamos el número de cartas según el número de dificultad que sea.
+				switch(nivel)
+				{
+					case "facil":
+						contacts.models.length = 4;
+						break;
+
+					case "medio":
+						contacts.models.length = 6;
+						break;
+
+					case "dificil":
+						contacts.models.length = 8;
+						break;
+					default:
+						contacts.models.length = 4;
+						break;
+				}
+
+				//Desordenamos la colección.
+				contacts.models = _.shuffle(contacts.models);
+				
+				//Introducimos en la variable la coleccion, para añadirla
+				var contactsListView = new ContactManager.ContactsView({
+					collection: contacts
+				});
+				
+				ContactManager.mainRegion.show(contactsListView);
+			});
+			
+			ContactManager.start();
+
+		</script>
+	</body>
+</html>
